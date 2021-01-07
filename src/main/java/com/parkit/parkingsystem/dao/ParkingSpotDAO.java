@@ -56,4 +56,31 @@ public class ParkingSpotDAO {
         }
     }
 
+    public ParkingSpot getParkingSpot(int id) {
+        //update the availability fo that parking slot
+        Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.GET_PARKING_SPOT);
+            ps.setInt(1, id);
+            ResultSet resultSet = ps.executeQuery();
+            if(resultSet.next()){
+                return new ParkingSpot(
+                    resultSet.getInt("PARKING_NUMBER"),
+                    ParkingType.valueOf(resultSet.getString("TYPE")),
+                        resultSet.getInt("AVAILABLE") == 1
+                );
+            }
+
+            dataBaseConfig.closeResultSet(resultSet);
+            dataBaseConfig.closePreparedStatement(ps);
+        }catch (Exception ex){
+            logger.error("Error getting parking info", ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+
+        return null;
+    }
+
 }
