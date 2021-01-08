@@ -19,6 +19,11 @@ public class FareCalculatorService {
         float duration = Duration.between(inHour.toInstant(), outHour.toInstant()).getSeconds(); // get seconds between inHour & outHour
         duration = duration / 3600.0f; // divide by 3600.0f for 1 hour
 
+       if (duration <= 0.5f) {
+            ticket.setPrice(0);
+            return;
+       }
+
         switch (ticket.getParkingSpot().getParkingType()){
             case CAR: {
                 ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);

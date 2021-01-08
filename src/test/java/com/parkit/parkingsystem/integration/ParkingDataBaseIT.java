@@ -73,23 +73,31 @@ public class ParkingDataBaseIT {
     }
 
 
-    @Test
-    public void testParkingLotExit() throws InterruptedException {
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        parkingService.processIncomingVehicle();
-        Ticket ticket = ticketDAO.getTicket(VehicleRegistrationNumber);
-        Date inTime = ticket.getInTime();
-        ticket.setInTime(DateUtils.setHours(inTime, inTime.getHours() - 1));
-        ticket.setOutTime(new Date());
-        ticketDAO.updateTicket(ticket);
+    private void createTicketInDatabase(ParkingService parkingService, Date inTime) {
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+        parkingSpot.setAvailable(false);
+        parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
 
-        // wait for updateTicket transaction
-        Thread.sleep(2000);
+        Ticket ticket = new Ticket();
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber(VehicleRegistrationNumber);
+        ticket.setPrice(0);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(null);
+        ticketDAO.saveTicket(ticket);
+    }
+
+    @Test
+    public void testParkingLotExit() {
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+        Date inTime = new Date();
+        createTicketInDatabase(parkingService, DateUtils.setHours(inTime, inTime.getHours() - 1));
 
         parkingService.processExitingVehicle();
 
         // check that the fare generated and out time are populated correctly in the database
-        ticket = ticketDAO.getTicket(VehicleRegistrationNumber);
+        Ticket ticket = ticketDAO.getTicket(VehicleRegistrationNumber);
         assertNotNull(ticket);
         assertTrue(ticket.getId() > 0);
         assertTrue(ticket.getPrice() > 0);
