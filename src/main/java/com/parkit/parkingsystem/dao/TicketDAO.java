@@ -84,6 +84,7 @@ public class TicketDAO {
         }finally {
             dataBaseConfig.closeConnection(con);
         }
+        // TODO test
         return false;
     }
 }
