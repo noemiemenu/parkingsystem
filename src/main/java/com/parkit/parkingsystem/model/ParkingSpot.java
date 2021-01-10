@@ -37,7 +37,7 @@ public class ParkingSpot {
         isAvailable = available;
     }
 
-    // TODO Test equals
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
