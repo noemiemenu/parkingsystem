@@ -11,14 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ParkingServiceTest {
 
     private static ParkingService parkingService;
@@ -46,6 +49,7 @@ public class ParkingServiceTest {
             when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
 
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw  new RuntimeException("Failed to set up test mock objects");
@@ -55,7 +59,42 @@ public class ParkingServiceTest {
     @Test
     public void processExitingVehicleTest(){
         parkingService.processExitingVehicle();
-        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+
+        verify(parkingSpotDAO, times(1)).updateParking(any(ParkingSpot.class));
+        verify(ticketDAO, times(1)).getTicket("ABCDEF");
+        verify(ticketDAO, times(1)).updateTicket(any(Ticket.class));
+    }
+
+    @Test
+    public void processIncomingVehicleTest(){
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
+
+        parkingService.processIncomingVehicle();
+
+        verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
+        verify(parkingSpotDAO, times(1)).updateParking(any(ParkingSpot.class));
+        verify(ticketDAO, times(1)).saveTicket(any(Ticket.class));
+    }
+
+
+    @Test
+    public void getNextParkingNumberIfAvailableMustReturnNullOnError() {
+        when(inputReaderUtil.readSelection()).thenReturn(42);
+
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+
+        assertNull(parkingSpot);
+    }
+
+    @Test
+    public void getNextParkingNumberIfAvailableMustReturnNullWhenParkingNumberIsEqualsToZero() {
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(0);
+
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+
+        assertNull(parkingSpot);
     }
 
 }
