@@ -58,6 +58,7 @@ public class TicketDAO {
                 ticket.setPrice(rs.getDouble(3));
                 ticket.setInTime(rs.getTimestamp(4));
                 ticket.setOutTime(rs.getTimestamp(5));
+                ticket.setRecurrent(rs.getBoolean(7));
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
@@ -74,9 +75,18 @@ public class TicketDAO {
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
+            PreparedStatement recurrentStatement = con.prepareStatement(DBConstants.IS_RECURRENT);
+
+            recurrentStatement.setString(1, ticket.getVehicleRegNumber());
+            ResultSet rs = recurrentStatement.executeQuery();
+            if (rs.next()) {
+                ticket.setRecurrent(rs.getInt(1) > 1);
+            }
+
             ps.setDouble(1, ticket.getPrice());
             ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
-            ps.setInt(3,ticket.getId());
+            ps.setBoolean(3, ticket.isRecurrent());
+            ps.setInt(4, ticket.getId());
             ps.execute();
             return true;
         }catch (Exception ex){

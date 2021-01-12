@@ -164,5 +164,38 @@ public class FareCalculatorServiceTest {
 
     }
 
+    @Test
+    public void DiscountForRecurringUsers(){
+        Date inTime = new Date();
+        inTime = DateUtils.addHours(inTime, -1);
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurrent(false);
+        fareCalculatorService.calculateFare(ticket);
+        double price = ticket.getPrice() * 0.95;
+        ticket.setRecurrent(true);
 
+        fareCalculatorService.calculateFare(ticket);
+
+        assertEquals(price, ticket.getPrice());
+    }
+
+    @Test
+    public void DiscountForNotRecurringUsers(){
+        Date inTime = new Date();
+        inTime = DateUtils.addHours(inTime, -1);
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurrent(false);
+        fareCalculatorService.calculateFare(ticket);
+        double price = ticket.getPrice() * 0.95;
+
+        assertNotEquals(price, ticket.getPrice());
+    }
 }
