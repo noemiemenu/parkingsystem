@@ -13,13 +13,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 
+/**
+ * Data Access Object of a Ticket
+ * TicketDAO is a Ticket interface between the program and the database
+ */
 public class TicketDAO {
 
     private static final Logger logger = LogManager.getLogger("TicketDAO");
 
     public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
-    public boolean saveTicket(Ticket ticket){
+    /**
+     * save Ticket in database
+     * @param ticket an instance of a ticket to be saved
+     * @return boolean
+     */
+    public boolean saveTicket(Ticket ticket) {
         Connection con = null;
         try {
             con = dataBaseConfig.getConnection();
@@ -32,33 +41,37 @@ public class TicketDAO {
                 ticket.setRecurrent(rs.getInt(1) >= 1);
             }
 
-            ps.setInt(1,ticket.getParkingSpot().getId());
+            ps.setInt(1, ticket.getParkingSpot().getId());
             ps.setString(2, ticket.getVehicleRegNumber());
             ps.setDouble(3, ticket.getPrice());
             ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-            ps.setTimestamp(5, (ticket.getOutTime() == null)?null: (new Timestamp(ticket.getOutTime().getTime())) );
+            ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
             ps.setBoolean(6, ticket.isRecurrent());
             return ps.execute();
-        }catch (Exception ex){
-            logger.error("Error fetching next available slot",ex);
-        }finally {
+        } catch (Exception ex) {
+            logger.error("Error fetching next available slot", ex);
+        } finally {
             dataBaseConfig.closeConnection(con);
             return false;
         }
     }
 
+    /**
+     * transforms a Ticket in database in an instance of a Ticket
+     * @param vehicleRegNumber string
+     * @return ticket
+     */
     public Ticket getTicket(String vehicleRegNumber) {
         Connection con = null;
         Ticket ticket = null;
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
-            //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-            ps.setString(1,vehicleRegNumber);
+            ps.setString(1, vehicleRegNumber);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 ticket = new Ticket();
-                ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),false);
+                ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)), false);
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setId(rs.getInt(2));
                 ticket.setVehicleRegNumber(vehicleRegNumber);
@@ -69,14 +82,19 @@ public class TicketDAO {
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
-        }catch (Exception ex){
-            logger.error("Error fetching next available slot",ex);
-        }finally {
+        } catch (Exception ex) {
+            logger.error("Error fetching next available slot", ex);
+        } finally {
             dataBaseConfig.closeConnection(con);
             return ticket;
         }
     }
 
+    /**
+     * update a ticket with user information and save it in the database
+     * @param ticket an instance of a ticket to be updated
+     * @return boolean
+     */
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
         try {
@@ -96,9 +114,9 @@ public class TicketDAO {
             ps.setInt(4, ticket.getId());
             ps.execute();
             return true;
-        }catch (Exception ex){
-            logger.error("Error saving ticket info",ex);
-        }finally {
+        } catch (Exception ex) {
+            logger.error("Error saving ticket info", ex);
+        } finally {
             dataBaseConfig.closeConnection(con);
         }
 

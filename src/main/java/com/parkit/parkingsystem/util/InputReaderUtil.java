@@ -5,11 +5,18 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
 
+/**
+ * helper to read the user input
+ */
 public class InputReaderUtil {
 
     private static Scanner scan = new Scanner(System.in);
     private static final Logger logger = LogManager.getLogger("InputReaderUtil");
 
+    /**
+     *
+     * @return int corresponding to ParkingType (ex: ParkingType.CAR)
+     */
     public int readSelection() {
         try {
             int input = Integer.parseInt(scan.nextLine());
@@ -21,6 +28,11 @@ public class InputReaderUtil {
         }
     }
 
+    /**
+     *
+     * @return string corresponding to Vehicle Registration Number
+     * @throws Exception
+     */
     public String readVehicleRegistrationNumber() throws Exception {
         try {
             String vehicleRegNumber= scan.nextLine();

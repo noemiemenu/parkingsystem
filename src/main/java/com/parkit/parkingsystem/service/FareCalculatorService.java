@@ -6,8 +6,15 @@ import com.parkit.parkingsystem.model.Ticket;
 import java.time.Duration;
 import java.util.Date;
 
+/**
+ * Manages the price of a Ticket
+ */
 public class FareCalculatorService {
 
+/**
+     * calculate the price according to the time to stay and the type of vehicle.
+     * @param ticket instance of a Ticket.
+     */
     public void calculateFare(Ticket ticket){
         if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
@@ -38,6 +45,10 @@ public class FareCalculatorService {
         applyDiscountOnRecurringVisits(ticket);
     }
 
+/**
+     * applyDiscountOnRecurringVisits applies 15% to recurring visitors
+     * @param ticket instance of a Ticket.
+     */
     private void applyDiscountOnRecurringVisits(Ticket ticket) {
         if (ticket.isRecurrent()) {
             ticket.setPrice(ticket.getPrice() * 0.95);

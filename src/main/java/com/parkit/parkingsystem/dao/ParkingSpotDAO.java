@@ -11,11 +11,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * Data Access Object of a ParkingSpot
+ * ParkingSpotDAO is a ParkingSpot interface between the program and the database
+ */
 public class ParkingSpotDAO {
     private static final Logger logger = LogManager.getLogger("ParkingSpotDAO");
 
     public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
+    /**
+     * check available slot
+     * @param parkingType
+     * @return int
+     */
     public int getNextAvailableSlot(ParkingType parkingType){
         Connection con = null;
         int result=-1;
@@ -37,8 +46,12 @@ public class ParkingSpotDAO {
         return result;
     }
 
+    /**
+     * update the availability for that parking slot
+     * @param parkingSpot
+     * @return boolean
+     */
     public boolean updateParking(ParkingSpot parkingSpot){
-        //update the availability fo that parking slot
         Connection con = null;
         try {
             con = dataBaseConfig.getConnection();
@@ -56,16 +69,22 @@ public class ParkingSpotDAO {
         }
     }
 
+    /**
+     * its request the ParkingStop information to the database by the id
+     * @param id
+     * @return spot parking instance
+     */
     public ParkingSpot getParkingSpot(int id) {
-        //update the availability fo that parking slot
         Connection con = null;
+
+        ParkingSpot parkingSpot = null;
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_PARKING_SPOT);
             ps.setInt(1, id);
             ResultSet resultSet = ps.executeQuery();
             if(resultSet.next()){
-                return new ParkingSpot(
+                parkingSpot = new ParkingSpot(
                     resultSet.getInt("PARKING_NUMBER"),
                     ParkingType.valueOf(resultSet.getString("TYPE")),
                         resultSet.getInt("AVAILABLE") == 1
@@ -80,7 +99,7 @@ public class ParkingSpotDAO {
             dataBaseConfig.closeConnection(con);
         }
 
-        return null;
+        return parkingSpot;
     }
 
 }

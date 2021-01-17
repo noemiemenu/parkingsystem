@@ -6,10 +6,16 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * user interface
+ */
 public class InteractiveShell {
 
     private static final Logger logger = LogManager.getLogger("InteractiveShell");
 
+    /**
+     * Manages the logic of the application
+     */
     public static void loadInterface(){
         logger.info("App initialized!!!");
         System.out.println("Welcome to Parking System!");
@@ -42,6 +48,9 @@ public class InteractiveShell {
         }
     }
 
+    /**
+     * Display the app menu
+     */
     private static void loadMenu(){
         System.out.println("Please select an option. Simply enter the number to choose an action");
         System.out.println("1 New Vehicle Entering - Allocate Parking Space");
