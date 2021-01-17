@@ -67,6 +67,7 @@ public class ParkingServiceTest {
 
     @Test
     public void processIncomingVehicleTest(){
+        when(ticketDAO.saveTicket(any(Ticket.class))).thenReturn(true);
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
 

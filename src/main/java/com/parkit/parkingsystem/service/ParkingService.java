@@ -55,6 +55,7 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
+
                 if (!ticketDAO.saveTicket(ticket)) {
                     System.out.println("Your vehicle registration number is incorrect");
                     return;
