@@ -44,6 +44,8 @@ public class TicketDAO {
             ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
             ps.setBoolean(6, ticket.isRecurrent());
             ps.execute();
+            dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closePreparedStatement(recurrentStatement);
             return true;
         }
         catch (ClassNotFoundException ex) {
@@ -84,6 +86,7 @@ public class TicketDAO {
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closeConnection(con);
         } catch (ClassNotFoundException ex) {
             logger.error("Class not found: ", ex);
         } catch (SQLException ex) {
@@ -117,11 +120,15 @@ public class TicketDAO {
             ps.setBoolean(3, ticket.isRecurrent());
             ps.setInt(4, ticket.getId());
             ps.execute();
+            dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closePreparedStatement(recurrentStatement);
             return true;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            logger.error("Class not found", ex);
+        } catch (SQLException ex) {
+            logger.error("Error fetching while updating ticket", ex);
+        } finally {
+            dataBaseConfig.closeConnection(con);
         }
 
         return false;

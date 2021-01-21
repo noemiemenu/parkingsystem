@@ -61,13 +61,15 @@ public class ParkingSpotDAO {
      */
     public boolean updateParking(ParkingSpot parkingSpot) {
         Connection con = null;
+        PreparedStatement ps = null;
         try {
             con = dataBaseConfig.getConnection();
-            PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_PARKING_SPOT);
+            ps = con.prepareStatement(DBConstants.UPDATE_PARKING_SPOT);
             ps.setBoolean(1, parkingSpot.isAvailable());
             ps.setInt(2, parkingSpot.getId());
             int updateRowCount = ps.executeUpdate();
             dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closeConnection(con);
             return (updateRowCount == 1);
         }
         catch (ClassNotFoundException ex) {
@@ -76,6 +78,7 @@ public class ParkingSpotDAO {
         catch (SQLException ex) {
             logger.error("Error updating parking info", ex);
         } finally {
+            dataBaseConfig.closePreparedStatement(ps);
             dataBaseConfig.closeConnection(con);
         }
 
