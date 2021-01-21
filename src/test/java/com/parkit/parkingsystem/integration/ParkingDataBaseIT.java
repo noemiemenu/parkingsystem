@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,7 +74,7 @@ public class ParkingDataBaseIT {
     }
 
 
-    private void createTicketInDatabase(ParkingService parkingService, Date inTime) {
+    private void createTicketInDatabase(ParkingService parkingService, Date inTime) throws SQLException {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
         parkingSpot.setAvailable(false);
         parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
@@ -92,7 +93,7 @@ public class ParkingDataBaseIT {
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         Date inTime = new Date();
-        createTicketInDatabase(parkingService, DateUtils.setHours(inTime, inTime.getHours() - 1));
+        assertDoesNotThrow(() -> createTicketInDatabase(parkingService, DateUtils.setHours(inTime, inTime.getHours() - 1)));
 
         parkingService.processExitingVehicle();
 

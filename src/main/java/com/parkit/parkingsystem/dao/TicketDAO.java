@@ -8,10 +8,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 /**
  * Data Access Object of a Ticket
@@ -48,7 +45,11 @@ public class TicketDAO {
             ps.setBoolean(6, ticket.isRecurrent());
             ps.execute();
             return true;
-        } catch (Exception ex) {
+        }
+        catch (ClassNotFoundException ex) {
+            logger.error("Class not found: ", ex);
+        }
+        catch (SQLException ex) {
             logger.error("Error fetching next available slot", ex);
         } finally {
             dataBaseConfig.closeConnection(con);
@@ -83,7 +84,9 @@ public class TicketDAO {
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException ex) {
+            logger.error("Class not found: ", ex);
+        } catch (SQLException ex) {
             logger.error("Error fetching next available slot", ex);
         } finally {
             dataBaseConfig.closeConnection(con);
@@ -115,10 +118,10 @@ public class TicketDAO {
             ps.setInt(4, ticket.getId());
             ps.execute();
             return true;
-        } catch (Exception ex) {
-            logger.error("Error saving ticket info", ex);
-        } finally {
-            dataBaseConfig.closeConnection(con);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
 
         return false;

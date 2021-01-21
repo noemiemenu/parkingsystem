@@ -15,9 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,9 +85,9 @@ public class ParkingServiceTest {
     public void getNextParkingNumberIfAvailableMustReturnNullOnError() {
         when(inputReaderUtil.readSelection()).thenReturn(42);
 
-        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
-
-        assertNull(parkingSpot);
+        AtomicReference<ParkingSpot> parkingSpotAtomicReference = new AtomicReference<>(new ParkingSpot());
+        assertDoesNotThrow(() -> parkingSpotAtomicReference.set(parkingService.getNextParkingNumberIfAvailable()));
+        assertNull(parkingSpotAtomicReference.get());
     }
 
     @Test
@@ -93,9 +95,7 @@ public class ParkingServiceTest {
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(0);
 
-        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
-
-        assertNull(parkingSpot);
+        assertThrows(SQLException.class, () -> parkingService.getNextParkingNumberIfAvailable());
     }
 
 }

@@ -14,6 +14,9 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test for class FareCalculatorService
+ */
 public class FareCalculatorServiceTest {
 
     private static FareCalculatorService fareCalculatorService;
@@ -29,6 +32,9 @@ public class FareCalculatorServiceTest {
         ticket = new Ticket();
     }
 
+    /**
+     * Test the price for parking a car
+     */
     @Test
     public void calculateFareCar() {
         Date inTime = new Date();
@@ -44,6 +50,9 @@ public class FareCalculatorServiceTest {
         assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR);
     }
 
+    /**
+     * Test the price for parking a bike
+     */
     @Test
     public void calculateFareBike() {
         Date inTime = new Date();
@@ -59,8 +68,11 @@ public class FareCalculatorServiceTest {
         assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
     }
 
+    /**
+     * Test the price is null if we do not have the type of vehicle
+     */
     @Test
-    public void calculateFareUnkownType() {
+    public void calculateFareUnknownType() {
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
         Date outTime = new Date();
@@ -72,7 +84,7 @@ public class FareCalculatorServiceTest {
 
         assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
-
+    
     @Test
     public void calculateFareBikeWithFutureInTime() {
         Date inTime = new Date();
