@@ -68,16 +68,28 @@ public class ParkingServiceTest {
     }
 
     @Test
+    public void processIncomingVehicleMustThrowIllegalArgumentExceptionWhenCarIsAlreadyParked(){
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
+
+        assertThrows(IllegalArgumentException.class, () -> parkingService.processIncomingVehicle());
+
+        verify(ticketDAO, times(1)).getTicket(any(String.class));
+    }
+
+    @Test
     public void processIncomingVehicleTest(){
         when(ticketDAO.saveTicket(any(Ticket.class))).thenReturn(true);
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
+        when(ticketDAO.getTicket(anyString())).thenReturn(null);
 
         parkingService.processIncomingVehicle();
 
         verify(parkingSpotDAO, times(1)).getNextAvailableSlot(any(ParkingType.class));
         verify(parkingSpotDAO, times(1)).updateParking(any(ParkingSpot.class));
         verify(ticketDAO, times(1)).saveTicket(any(Ticket.class));
+        verify(ticketDAO, times(1)).getTicket(any(String.class));
     }
 
 

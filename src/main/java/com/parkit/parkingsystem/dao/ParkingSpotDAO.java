@@ -78,8 +78,8 @@ public class ParkingSpotDAO {
         catch (SQLException ex) {
             logger.error("Error updating parking info", ex);
         } finally {
-            dataBaseConfig.closePreparedStatement(ps);
-            dataBaseConfig.closeConnection(con);
+           dataBaseConfig.closePreparedStatement(ps);
+           dataBaseConfig.closeConnection(con);
         }
 
         return false;

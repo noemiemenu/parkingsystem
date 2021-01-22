@@ -31,7 +31,11 @@ public class InteractiveShell {
             int option = inputReaderUtil.readSelection();
             switch(option){
                 case 1: {
-                    parkingService.processIncomingVehicle();
+                    try {
+                        parkingService.processIncomingVehicle();
+                    } catch (IllegalArgumentException illegalArgumentException) {
+                        System.out.println(illegalArgumentException.getMessage());
+                    }
                     break;
                 }
                 case 2: {

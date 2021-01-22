@@ -40,15 +40,19 @@ public class ParkingService {
     /**
      * processIncomingVehicle records information when a vehicle arrives
      */
-    public void processIncomingVehicle() {
+    public void processIncomingVehicle() throws IllegalArgumentException {
         try {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if (parkingSpot != null && parkingSpot.getId() > 0) {
                 String vehicleRegNumber = getVehichleRegNumber();
+                Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
+                if (ticket != null && ticket.getOutTime() == null) {
+                    throw new IllegalArgumentException("Your vehicle is already parked, please select option two to exit.");
+                }
                 parkingSpot.setAvailable(false);
 
                 Date inTime = new Date();
-                Ticket ticket = new Ticket();
+                ticket = new Ticket();
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
@@ -56,6 +60,7 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
+
 
                 if (!ticketDAO.saveTicket(ticket)) {
                     System.out.println("Your vehicle registration number is incorrect");

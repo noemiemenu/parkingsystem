@@ -11,26 +11,30 @@ import java.util.Date;
  */
 public class FareCalculatorService {
 
-/**
+    /**
      * calculate the price according to the time to stay and the type of vehicle.
+     *
      * @param ticket instance of a Ticket.
      */
-    public void calculateFare(Ticket ticket){
-        if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
-            throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
+    public void calculateFare(Ticket ticket) {
+        if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
+            throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
         }
 
         Date inHour = ticket.getInTime();
         Date outHour = ticket.getOutTime();
 
-        float duration = Duration.between(inHour.toInstant(), outHour.toInstant()).getSeconds(); // get seconds between inHour & outHour
+        double duration = Duration.between(inHour.toInstant(), outHour.toInstant()).getSeconds(); // get seconds between inHour & outHour
         duration = duration / 3600.0f; // divide by 3600.0f for 1 hour
 
         if (duration <= 0.5f) {
             ticket.setPrice(0);
             return;
         }
-        switch (ticket.getParkingSpot().getParkingType()){
+
+        duration = Math.ceil(duration);
+
+        switch (ticket.getParkingSpot().getParkingType()) {
             case CAR: {
                 ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
                 break;
@@ -39,19 +43,25 @@ public class FareCalculatorService {
                 ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
                 break;
             }
-            default: throw new IllegalArgumentException("Unkown Parking Type");
+            default:
+                throw new IllegalArgumentException("Unkown Parking Type");
         }
 
         applyDiscountOnRecurringVisits(ticket);
     }
 
-/**
+    /**
      * applyDiscountOnRecurringVisits applies 15% to recurring visitors
+     *
      * @param ticket instance of a Ticket.
      */
     private void applyDiscountOnRecurringVisits(Ticket ticket) {
         if (ticket.isRecurrent()) {
-            ticket.setPrice(ticket.getPrice() * 0.95);
+            double price = ticket.getPrice() * 0.95;
+            price = price * 10;
+            price = Math.round(price);
+            price = price / 10;
+            ticket.setPrice(price);
         }
     }
 }
