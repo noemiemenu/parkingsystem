@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Manages the price of a Ticket
  */
-public class FareCalculatorService {
+public class FareCalculatorServiceImpl implements IFareCalculatorService {
 
     /**
      * calculate the price according to the time to stay and the type of vehicle.
@@ -44,14 +44,14 @@ public class FareCalculatorService {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Unkown Parking Type");
+                throw new IllegalArgumentException("Unknown Parking Type");
         }
 
         applyDiscountOnRecurringVisits(ticket);
     }
 
     /**
-     * applyDiscountOnRecurringVisits applies 15% to recurring visitors
+     * applyDiscountOnRecurringVisits applies 5% to recurring visitors
      *
      * @param ticket instance of a Ticket.
      */
