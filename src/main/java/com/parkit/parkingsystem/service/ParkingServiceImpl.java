@@ -15,15 +15,15 @@ import java.util.Date;
 /**
  * Manages the Parking
  */
-public class ParkingService {
+public class ParkingServiceImpl implements IParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
 
-    private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
+    private static final IFareCalculatorService fareCalculatorService = new FareCalculatorServiceImpl();
 
-    private InputReaderUtil inputReaderUtil;
-    private ParkingSpotDAO parkingSpotDAO;
-    private TicketDAO ticketDAO;
+    private final InputReaderUtil inputReaderUtil;
+    private final ParkingSpotDAO parkingSpotDAO;
+    private final TicketDAO ticketDAO;
 
     /**
      * ParkingService Constructor
@@ -31,7 +31,7 @@ public class ParkingService {
      * @param parkingSpotDAO ParkingSpot database interface
      * @param ticketDAO Ticket database interface
      */
-    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
+    public ParkingServiceImpl(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;
@@ -49,8 +49,8 @@ public class ParkingService {
                 if (ticket != null && ticket.getOutTime() == null) {
                     throw new IllegalArgumentException("Your vehicle is already parked, please select option two to exit.");
                 }
-                parkingSpot.setAvailable(false);
 
+                parkingSpot.setAvailable(false);
                 Date inTime = new Date();
                 ticket = new Ticket();
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)

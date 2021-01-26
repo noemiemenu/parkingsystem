@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Manages the price of a Ticket
  */
-public class FareCalculatorService {
+public class FareCalculatorServiceImpl implements IFareCalculatorService {
 
     /**
      * calculate the price according to the time to stay and the type of vehicle.

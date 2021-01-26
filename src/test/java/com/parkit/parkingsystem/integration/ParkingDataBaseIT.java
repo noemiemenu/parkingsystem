@@ -6,7 +6,8 @@ import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.ParkingService;
+import com.parkit.parkingsystem.service.IParkingService;
+import com.parkit.parkingsystem.service.ParkingServiceImpl;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -59,7 +60,7 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingACar() {
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        IParkingService parkingService = new ParkingServiceImpl(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
 
         // check that a ticket is actually saved in DB
@@ -74,7 +75,7 @@ public class ParkingDataBaseIT {
     }
 
 
-    private void createTicketInDatabase(ParkingService parkingService, Date inTime) throws SQLException {
+    private void createTicketInDatabase(IParkingService parkingService, Date inTime) throws SQLException {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
         parkingSpot.setAvailable(false);
         parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
@@ -90,7 +91,7 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingLotExit() {
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        IParkingService parkingService = new ParkingServiceImpl(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         Date inTime = new Date();
         assertDoesNotThrow(() -> createTicketInDatabase(parkingService, DateUtils.setHours(inTime, inTime.getHours() - 1)));

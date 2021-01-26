@@ -4,7 +4,8 @@ import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorService;
+import com.parkit.parkingsystem.service.FareCalculatorServiceImpl;
+import com.parkit.parkingsystem.service.IFareCalculatorService;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test for class FareCalculatorService
  */
-public class FareCalculatorServiceTest {
+public class FareCalculatorServiceImplTest {
 
-    private static FareCalculatorService fareCalculatorService;
+    private static IFareCalculatorService fareCalculatorService;
     private Ticket ticket;
 
     @BeforeAll
     private static void setUp() {
-        fareCalculatorService = new FareCalculatorService();
+        fareCalculatorService = new FareCalculatorServiceImpl();
     }
 
     @BeforeEach
